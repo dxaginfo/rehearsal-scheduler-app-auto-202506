@@ -1,0 +1,29 @@
+version: '3.7'
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: rehearsal
+      POSTGRES_PASSWORD: rehearsal_pw
+      POSTGRES_DB: rehearsal
+    ports:
+      - "5432:5432"
+    volumes:
+      - rehearsal-db-data:/var/lib/postgresql/data
+  server:
+    build: ./server
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: postgres://rehearsal:rehearsal_pw@db:5432/rehearsal
+    depends_on:
+      - db
+  client:
+    build: ./client
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+volumes:
+  rehearsal-db-data:
